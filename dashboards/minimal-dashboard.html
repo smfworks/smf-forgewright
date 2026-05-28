@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Forgewright Dashboard</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 32px; background: #0f172a; color: #e2e8f0; }
+    a { color: #93c5fd; }
+    .card { background: #111827; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin: 12px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { border-bottom: 1px solid #334155; padding: 8px; text-align: left; vertical-align: top; }
+    th { color: #bfdbfe; }
+  </style>
+</head>
+<body>
+  <h1>Forgewright Dashboard</h1>
+  <div id="summary" class="card"></div>
+  <table>
+    <thead><tr><th>Scope</th><th>Title</th><th>Source</th><th>Confidence</th><th>Action</th><th>Evidence</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <script id="payload" type="application/json">{}</script>
+  <script>
+    const payload = JSON.parse(document.getElementById('payload').textContent || '{}');
+    const rows = [];
+    for (const [scope, items] of Object.entries(payload.account_results || {})) {
+      for (const item of items || []) rows.push({ scope, ...item });
+    }
+    for (const item of payload.global_results || []) rows.push({ scope: 'Global', ...item });
+    document.getElementById('summary').innerHTML = `<strong>Generated:</strong> ${payload.generated_at || payload.generated || 'n/a'}<br><strong>Signals:</strong> ${rows.length}<br><strong>Empty cases:</strong> ${(payload.empty_cases || []).length}`;
+    document.getElementById('rows').innerHTML = rows.map(item => `<tr><td>${item.scope || ''}</td><td>${item.title || ''}</td><td><a href="${item.url || '#'}">${item.source_name || item.source_tier || item.url || ''}</a></td><td>${item.confidence || ''}</td><td>${item.recommended_action || ''}</td><td>${item.screenshot || ''}</td></tr>`).join('');
+  </script>
+</body>
+</html>

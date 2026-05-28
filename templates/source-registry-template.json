@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "description": "Public unauthenticated source registry for a Forgewright use case.",
+  "sources": [
+    {
+      "name": "Example official source",
+      "url": "https://example.com/news",
+      "category": "official",
+      "source_tier": "official",
+      "auth": "public",
+      "tags": ["news", "official"],
+      "notes": "Replace with an approved seeded source."
+    }
+  ],
+  "blocked_or_excluded_sources": []
+}

@@ -1,0 +1,16 @@
+{
+  "params": {},
+  "generated_at": "YYYY-MM-DDTHH:mm:ss",
+  "source_registry": {"path": "", "version": ""},
+  "account_results": {},
+  "global_results": [],
+  "empty_cases": [],
+  "evidence_index": [],
+  "run_artifacts": {
+    "run_dir": "",
+    "final_script": "",
+    "log": "",
+    "markdown_report": "",
+    "json_data": ""
+  }
+}

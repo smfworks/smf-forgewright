@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smf-forgewright"
+version = "0.1.0"
+description = "AI-guided Webwright-style browser automation plus SkillOpt-style local tuning workbench."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "SMF Works" }]
+dependencies = [
+  "playwright>=1.40",
+  "pydantic>=2",
+  "typer>=0.12"
+]
+
+[project.scripts]
+forgewright = "forgewright.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
