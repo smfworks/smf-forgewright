@@ -14,14 +14,15 @@ Help the user set up Forgewright, choose a use case, configure sources and outpu
    - Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup.ps1`
    - macOS/Linux: `bash scripts/setup.sh`
    - Existing environment: `forgewright doctor`
-4. Show the user sample use cases with `forgewright examples`.
-5. Ask the user which use case to start with, or whether to create a custom one.
-6. Run `forgewright init-use-case` and walk through the prompts.
+4. Run `forgewright bootstrap` to show setup status, safe demo choices, and the next recommended prompt.
+5. Show the user sample use cases with `forgewright examples`.
+6. Ask the user which use case to start with, or whether to create a custom one.
+7. Run `forgewright init-use-case` and walk through the prompts.
 
 ## Rules
 
 - Do not embed credentials, tokens, cookies, or private data in files.
-- Do not log into private or customer systems unless the user explicitly authorizes the run.
+- Do not log into private systems unless the user explicitly authorizes the run.
 - Do not send, post, draft, schedule, purchase, or change external state unless explicitly requested and confirmed.
 - Prefer public unauthenticated sources for first runs.
 - Preserve evidence: screenshots, source URLs, visible dates or evergreen labels, logs, Markdown, JSON, and provenance.
@@ -43,4 +44,4 @@ outputs/<use-case>/final_runs/run_<n>/data.json
 
 ## Good default recommendation
 
-For a first demonstration, recommend `public-hls-field-intelligence` or `product-release-monitor` because both can run with public sources and produce dashboard-ready JSON without credentials.
+For a first demonstration, recommend `open-source-project-watchtower` because it uses public unauthenticated sources, avoids internal or confidential data, and produces dashboard-ready JSON without credentials.

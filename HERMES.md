@@ -18,7 +18,7 @@ Read AGENTS.md and HERMES.md. Install or verify SMF Forgewright, present sample 
 
 ## Good first use cases
 
-- Public customer/news intelligence.
+- Open-source project watchtower.
 - Product release monitoring.
 - Competitive public-source watchtower.
 - Regulatory or policy page monitoring.

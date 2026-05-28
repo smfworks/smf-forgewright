@@ -4,7 +4,7 @@ Report security issues privately to the repository owner.
 
 ## Secret handling
 
-Never commit credentials, PATs, tokens, cookies, private customer data, or session exports.
+Never commit credentials, PATs, tokens, cookies, private organizational data, or session exports.
 
 ## Default data boundary
 

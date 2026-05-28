@@ -12,7 +12,7 @@ Forgewright is designed to make browser automation reviewable and bounded.
 
 ## Prohibited by default
 
-- Live M365/private data reads.
+- Private workspace data reads.
 - Customer system login.
 - Credentials, secrets, tokens, cookies, or session data in code.
 - Sending, posting, drafting, scheduling, purchasing, deleting, or changing external state.

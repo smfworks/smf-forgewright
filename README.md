@@ -26,6 +26,7 @@ python -m venv .venv
 pip install -e .
 playwright install firefox
 forgewright doctor
+forgewright bootstrap
 forgewright examples
 forgewright init-use-case
 ```
@@ -47,7 +48,7 @@ bash scripts/setup.sh
 Tell your AI assistant:
 
 ```text
-Read AGENTS.md in this repository. Set up Forgewright, show me the sample use cases, ask me which one I want, then walk me through configuration, first run, SkillOpt tuning, and dashboard setup.
+Read AGENTS.md in this repository. Set up Forgewright, run `forgewright bootstrap`, show me the sample use cases, ask me which one I want, then walk me through configuration, first run, SkillOpt tuning, and dashboard setup.
 ```
 
 ## Core workflow
@@ -81,7 +82,11 @@ dashboards/                       Static dashboard templates
 
 ## Safety defaults
 
-Forgewright defaults to public/frozen/local sources. It does not authorize live M365 reads, private customer data access, credentials in code, outbound messages, posts, purchases, scheduling, or state-changing actions. Those require explicit user authorization and should remain human-reviewed.
+Forgewright defaults to public/frozen/local sources. It does not authorize private workspace reads, confidential data access, credentials in code, outbound messages, posts, purchases, scheduling, or state-changing actions. Those require explicit user authorization and should remain human-reviewed.
+
+## Public demo
+
+The default public-facing demo is `open-source-project-watchtower`. It uses only public unauthenticated sources and avoids internal company material, real organization names beyond public open-source projects, and confidential data.
 
 ## License
 

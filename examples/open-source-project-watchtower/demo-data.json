@@ -1,0 +1,76 @@
+{
+  "params": {
+    "source_config": "playbooks/sources/open-source-project-watchtower-sources.json",
+    "today": "2026-05-28",
+    "lookback_days": 30
+  },
+  "generated_at": "2026-05-28T17:05:00",
+  "source_registry": {
+    "path": "playbooks/sources/open-source-project-watchtower-sources.json",
+    "version": "1.0"
+  },
+  "account_results": {
+    "Open-source browser automation": [
+      {
+        "title": "Puppeteer public release page is included as a seeded source",
+        "url": "https://github.com/puppeteer/puppeteer/releases",
+        "source_name": "Puppeteer releases",
+        "source_tier": "public-github",
+        "date": "",
+        "date_label": "evergreen",
+        "topic": "release monitoring",
+        "direct_evidence": "The source registry includes the public releases page as an approved seed.",
+        "inference": "A scheduled run can compare visible release entries over time and summarize changes.",
+        "confidence": "high",
+        "opportunity_score": 5,
+        "recommended_action": "monitor",
+        "discovery_questions": [
+          "Which projects should be tracked?",
+          "Which release signals matter most: breaking changes, new APIs, security fixes, or examples?"
+        ],
+        "screenshot": "screenshots/demo-puppeteer-releases.png"
+      },
+      {
+        "title": "Selenium public release page is included as a seeded source",
+        "url": "https://github.com/SeleniumHQ/selenium/releases",
+        "source_name": "Selenium releases",
+        "source_tier": "public-github",
+        "date": "",
+        "date_label": "evergreen",
+        "topic": "release monitoring",
+        "direct_evidence": "The source registry includes the public releases page as an approved seed.",
+        "inference": "A scheduled run can track release cadence and compatibility signals.",
+        "confidence": "high",
+        "opportunity_score": 4,
+        "recommended_action": "monitor",
+        "discovery_questions": [
+          "Should the dashboard group releases by project, topic, or impact?"
+        ],
+        "screenshot": "screenshots/demo-selenium-releases.png"
+      }
+    ]
+  },
+  "global_results": [],
+  "empty_cases": [],
+  "evidence_index": [
+    {
+      "title": "Puppeteer releases",
+      "url": "https://github.com/puppeteer/puppeteer/releases",
+      "screenshot": "screenshots/demo-puppeteer-releases.png",
+      "source_tier": "public-github"
+    },
+    {
+      "title": "Selenium releases",
+      "url": "https://github.com/SeleniumHQ/selenium/releases",
+      "screenshot": "screenshots/demo-selenium-releases.png",
+      "source_tier": "public-github"
+    }
+  ],
+  "run_artifacts": {
+    "run_dir": "examples/open-source-project-watchtower",
+    "final_script": "",
+    "log": "",
+    "markdown_report": "",
+    "json_data": "examples/open-source-project-watchtower/demo-data.json"
+  }
+}

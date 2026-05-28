@@ -3,18 +3,16 @@ from __future__ import annotations
 import argparse
 import json
 import platform
-import shutil
 import subprocess
-from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
 SAMPLE_USE_CASES = [
     {
-        "id": "public-hls-field-intelligence",
-        "title": "Public HLS field intelligence",
-        "description": "Collect public account, market, Microsoft, and competitor signals with evidence screenshots and dashboard-ready JSON.",
+        "id": "open-source-project-watchtower",
+        "title": "Open-source project watchtower",
+        "description": "Track public GitHub repositories, release pages, and docs for change signals with evidence screenshots and dashboard-ready JSON.",
         "source_mode": "source-registry-first",
         "auth": "public unauthenticated",
     },
@@ -28,7 +26,7 @@ SAMPLE_USE_CASES = [
     {
         "id": "competitive-watchtower",
         "title": "Competitive watchtower",
-        "description": "Track public competitor product pages, positioning, customer stories, and docs.",
+        "description": "Track public project/product pages, positioning, release notes, and docs.",
         "source_mode": "source-registry-first",
         "auth": "public unauthenticated",
     },
@@ -69,6 +67,31 @@ def examples(_: argparse.Namespace) -> int:
     return 0
 
 
+def bootstrap(_: argparse.Namespace) -> int:
+    code, doctor_output = run(["python", "-m", "forgewright.cli", "doctor"])
+    doctor_payload = json.loads(doctor_output) if code == 0 else {"error": doctor_output}
+    payload = {
+        "status": "ready" if code == 0 else "needs_setup",
+        "message": "Forgewright public demo bootstrap",
+        "recommended_first_demo": "open-source-project-watchtower",
+        "next_prompt_for_ai": (
+            "Use the open-source-project-watchtower example. Show the source registry, "
+            "explain the evidence contract, then walk me through a first run, local "
+            "SkillOpt-style tuning, and dashboard refresh."
+        ),
+        "sample_use_cases": SAMPLE_USE_CASES,
+        "doctor": doctor_payload,
+        "public_safety_boundary": [
+            "Use public unauthenticated sources for the demo.",
+            "Do not use private workspace data.",
+            "Do not use confidential organization names or confidential data.",
+            "Do not send, post, draft, schedule, purchase, or change external state.",
+        ],
+    }
+    print(json.dumps(payload, indent=2))
+    return 0
+
+
 def slugify(value: str) -> str:
     return "".join(ch.lower() if ch.isalnum() else "-" for ch in value).strip("-").replace("--", "-") or "use-case"
 
@@ -80,10 +103,10 @@ def ask(prompt: str, default: str = "") -> str:
 
 
 def init_use_case(_: argparse.Namespace) -> int:
-    title = ask("Use-case title", "Public HLS field intelligence")
+    title = ask("Use-case title", "Open-source project watchtower")
     use_case_id = ask("Use-case id", slugify(title))
-    audience = ask("Audience", "field sellers and solution engineers")
-    primary_question = ask("Primary question", "What changed publicly that this audience should know?")
+    audience = ask("Audience", "project maintainers and technical evaluators")
+    primary_question = ask("Primary question", "What changed publicly across these projects that this audience should know?")
     source_boundary = ask("Source boundary", "public unauthenticated only")
     output_format = ask("Output format", "markdown-json")
     workspace = ROOT / "outputs" / use_case_id
@@ -181,6 +204,8 @@ def main() -> int:
     p.set_defaults(func=doctor)
     p = sub.add_parser("examples", help="List sample use cases")
     p.set_defaults(func=examples)
+    p = sub.add_parser("bootstrap", help="Show setup status, safe demo choices, and the next AI prompt")
+    p.set_defaults(func=bootstrap)
     p = sub.add_parser("init-use-case", help="Interactively create a use-case playbook and source registry")
     p.set_defaults(func=init_use_case)
     args = parser.parse_args()

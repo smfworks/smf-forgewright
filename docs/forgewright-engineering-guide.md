@@ -70,7 +70,7 @@ Dashboards consume JSON, not screenshots or markdown. Use `templates/dashboard-d
 ## Safety gates
 
 - Public/frozen/local sources by default.
-- No live M365/private data reads by default.
+- No private workspace data reads by default.
 - No credentials in files.
 - No login-walled sources without explicit authorization.
 - No outbound/state-changing actions without explicit confirmation.

@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "description": "Starter public source registry for an open-source project watchtower demo.",
+  "sources": [
+    {
+      "name": "Selenium releases",
+      "url": "https://github.com/SeleniumHQ/selenium/releases",
+      "category": "repository-releases",
+      "source_tier": "public-github",
+      "auth": "public",
+      "tags": ["browser-automation", "release-notes", "testing"],
+      "notes": "Use for public release signals and browser automation ecosystem context."
+    },
+    {
+      "name": "Puppeteer releases",
+      "url": "https://github.com/puppeteer/puppeteer/releases",
+      "category": "repository-releases",
+      "source_tier": "public-github",
+      "auth": "public",
+      "tags": ["browser-automation", "release-notes", "node"],
+      "notes": "Use for public release signals and browser automation ecosystem context."
+    },
+    {
+      "name": "Cypress releases",
+      "url": "https://github.com/cypress-io/cypress/releases",
+      "category": "repository-releases",
+      "source_tier": "public-github",
+      "auth": "public",
+      "tags": ["browser-automation", "release-notes", "testing"],
+      "notes": "Use for public release signals and browser automation ecosystem context."
+    }
+  ],
+  "blocked_or_excluded_sources": []
+}
