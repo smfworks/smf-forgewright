@@ -95,17 +95,61 @@
     "markdown_report": "",
     "json_data": "examples/open-source-project-watchtower/demo-data.json"
   }
-}
-</script>
+}</script>
   <script>
+    // Render-side hardening (hsf_34adf05df3361a020877e1d1): no innerHTML with
+    // payload-derived strings; DOM text nodes only, and hrefs restricted to
+    // http(s) schemes. All payload content is treated as untrusted text.
+    const SAFE_URL = /^(https?:\/\/)/i;
     const payload = JSON.parse(document.getElementById('payload').textContent || '{}');
+    function setText(id, nodes) {
+      const el = document.getElementById(id);
+      el.textContent = '';
+      el.append(...nodes);
+    }
+    function text(value) { return document.createTextNode(String(value ?? '')); }
+    function safeHref(raw) {
+      const s = String(raw || '').trim();
+      return SAFE_URL.test(s) ? s : null;
+    }
     const rows = [];
     for (const [scope, items] of Object.entries(payload.account_results || {})) {
       for (const item of items || []) rows.push({ scope, ...item });
     }
     for (const item of payload.global_results || []) rows.push({ scope: 'Global', ...item });
-    document.getElementById('summary').innerHTML = `<strong>Generated:</strong> ${payload.generated_at || payload.generated || 'n/a'}<br><strong>Signals:</strong> ${rows.length}<br><strong>Empty cases:</strong> ${(payload.empty_cases || []).length}`;
-    document.getElementById('rows').innerHTML = rows.map(item => `<tr><td>${item.scope || ''}</td><td>${item.title || ''}</td><td><a href="${item.url || '#'}">${item.source_name || item.source_tier || item.url || ''}</a></td><td>${item.confidence || ''}</td><td>${item.recommended_action || ''}</td><td>${item.screenshot || ''}</td></tr>`).join('');
+
+    const summary = [];
+    summary.push(text('Generated: '));
+    summary.push(text(payload.generated_at || payload.generated || 'n/a'));
+    summary.push(text('  Signals: ' + rows.length));
+    summary.push(text('  Empty cases: ' + (payload.empty_cases || []).length));
+    setText('summary', summary);
+
+    const tbody = document.getElementById('rows');
+    tbody.textContent = '';
+    for (const item of rows) {
+      const tr = document.createElement('tr');
+      tr.append(text(item.scope || ''));
+      const tdTitle = document.createElement('td');
+      tdTitle.append(text(item.title || ''));
+      tr.append(tdTitle);
+      const tdSource = document.createElement('td');
+      const href = safeHref(item.url);
+      if (href) {
+        const a = document.createElement('a');
+        a.href = href;
+        a.rel = 'noopener noreferrer';
+        a.append(text(item.source_name || item.source_tier || item.url || ''));
+        tdSource.append(a);
+      } else {
+        tdSource.append(text(item.source_name || item.source_tier || item.url || ''));
+      }
+      tr.append(tdSource);
+      tr.append(text(item.confidence || ''));
+      tr.append(text(item.recommended_action || ''));
+      tr.append(text(item.screenshot || ''));
+      tbody.append(tr);
+    }
   </script>
 </body>
 </html>
