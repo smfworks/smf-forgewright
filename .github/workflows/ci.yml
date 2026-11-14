@@ -4,12 +4,21 @@ on:
   push:
   pull_request:
 
+# Least privilege (hsf_76a8922a18c4a877ac9fd516): the default GITHUB_TOKEN
+# scopes are write-enabled; this workflow only needs read access.
+permissions:
+  contents: read
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      # SHA-pinned (hsf_6d0445557e6a3438999de63f): actions are referenced by
+      # immutable commit SHA, not mutable tags.
+      # actions/checkout v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      # actions/setup-python v5.3.0
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
         with:
           python-version: '3.12'
       - run: python -m pip install --upgrade pip
