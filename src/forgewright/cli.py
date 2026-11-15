@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import platform
+import re
 import subprocess
 from pathlib import Path
 
@@ -96,6 +97,32 @@ def slugify(value: str) -> str:
     return "".join(ch.lower() if ch.isalnum() else "-" for ch in value).strip("-").replace("--", "-") or "use-case"
 
 
+# hsf_0c240733ae0637661586f46d: fields embedded into generated agent-executed
+# playbooks are instruction content. Constrain them so a crafted answer cannot
+# inject directive lines or forge template structure.
+_INJECTION_MARKERS = re.compile(r"^[ \t]*(#|\||-{2,}|>{1,}|```)", re.MULTILINE)
+
+
+def sanitize_field(value: str, *, max_len: int = 300) -> str:
+    """Make a free-text answer safe to embed in a generated playbook."""
+    value = value.replace("\r\n", "\n").replace("\r", "\n")
+    lines = []
+    for line in value.split("\n"):
+        # Neutralize line-leading markdown structure and blockquote/command lines.
+        line = _INJECTION_MARKERS.sub(lambda m: m.group(1).replace("#", r"\#").replace("|", r"\|").replace("-", r"\-").replace(">", r"\>").replace("`", "'"), line)
+        # Neutralize path-shaped line starts (../ ..\ ./ /) — path-looking text in an
+        # agent-executed playbook misleads even when it cannot traverse.
+        line = re.sub(r"^(\.{1,2}/|/|\\)+", "", line)
+        # Never let a line open or close a fenced code block inside the template.
+        if '```' in line:
+            line = line.replace('```', "'''")
+        lines.append(line)
+    cleaned = "\n".join(lines).strip()
+    if len(cleaned) > max_len:
+        cleaned = cleaned[:max_len].rstrip() + "…"
+    return cleaned or "(not provided)"
+
+
 def ask(prompt: str, default: str = "") -> str:
     suffix = f" [{default}]" if default else ""
     value = input(f"{prompt}{suffix}: ").strip()
@@ -104,31 +131,43 @@ def ask(prompt: str, default: str = "") -> str:
 
 def init_use_case(_: argparse.Namespace) -> int:
     title = ask("Use-case title", "Open-source project watchtower")
-    use_case_id = ask("Use-case id", slugify(title))
+    # hsf_0c240733ae0637661586f46d: the id drives file paths AND appears in the
+    # playbook; always slugify, even when the user provides one explicitly
+    # (idempotent on already-clean ids). Prevents raw newlines/'#'/traversal
+    # from reaching paths or playbook headings.
+    use_case_id = slugify(ask("Use-case id", slugify(title)))
     audience = ask("Audience", "project maintainers and technical evaluators")
     primary_question = ask("Primary question", "What changed publicly across these projects that this audience should know?")
     source_boundary = ask("Source boundary", "public unauthenticated only")
     output_format = ask("Output format", "markdown-json")
+    # hsf_0c240733ae0637661586f46d: these fields are embedded verbatim into an
+    # agent-executed playbook; sanitize them so crafted answers cannot inject
+    # directive lines or forge template structure. Paths/ids are slug-derived.
+    title_s = sanitize_field(title, max_len=120)
+    audience_s = sanitize_field(audience, max_len=200)
+    question_s = sanitize_field(primary_question, max_len=300)
+    boundary_s = sanitize_field(source_boundary, max_len=200)
+    format_s = sanitize_field(output_format, max_len=60)
     workspace = ROOT / "outputs" / use_case_id
     playbook = ROOT / "playbooks" / f"{use_case_id}.md"
     source_registry = ROOT / "playbooks" / "sources" / f"{use_case_id}-sources.json"
     workspace.mkdir(parents=True, exist_ok=True)
     source_registry.parent.mkdir(parents=True, exist_ok=True)
 
-    playbook.write_text(f"""# Webwright Playbook: {title}
+    playbook.write_text(f"""# Webwright Playbook: {title_s}
 
 ## Purpose
 
-Create a repeatable Webwright-style workflow for {audience}.
+Create a repeatable Webwright-style workflow for {audience_s}.
 
 ## Primary question
 
-{primary_question}
+{question_s}
 
 ## Recommended command
 
 ```text
-/webwright:craft Build a reusable {title} collector. Read the maintained source registry at {source_registry.as_posix()}. Visit seeded public sources directly; do not rely on search-result pages as the primary scheduled-run discovery mechanism. Capture source URLs, visible dates or evergreen/undated labels, screenshots, source tier, direct evidence versus inference, confidence, recommended action, Markdown report, structured JSON, final_script.py path, and rerun command.
+/webwright:craft Build a reusable {title_s} collector. Read the maintained source registry at {source_registry.as_posix()}. Visit seeded public sources directly; do not rely on search-result pages as the primary scheduled-run discovery mechanism. Capture source URLs, visible dates or evergreen/undated labels, screenshots, source tier, direct evidence versus inference, confidence, recommended action, Markdown report, structured JSON, final_script.py path, and rerun command.
 ```
 
 ## Suggested parameters
@@ -139,7 +178,7 @@ Create a repeatable Webwright-style workflow for {audience}.
 | `lookback_days` | int | 30 | Dated items; evergreen pages allowed when labeled |
 | `max_items` | int | 25 | Keeps output reviewable |
 | `max_child_pages` | int | 2 | High-relevance same-site child pages |
-| `output_format` | str | {output_format} | Markdown plus JSON recommended |
+| `output_format` | str | {format_s} | Markdown plus JSON recommended |
 | `today` | str | current date | YYYY-MM-DD |
 
 ## Critical points
@@ -155,7 +194,7 @@ Create a repeatable Webwright-style workflow for {audience}.
 
 ## Source boundary
 
-{source_boundary}
+{boundary_s}
 
 ## Workspace
 
@@ -166,7 +205,7 @@ Create a repeatable Webwright-style workflow for {audience}.
 
     source_registry.write_text(json.dumps({
         "version": "1.0",
-        "description": f"Source registry for {title}.",
+        "description": f"Source registry for {title_s}.",
         "sources": [
             {
                 "name": "Example public source",
