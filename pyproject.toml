@@ -11,7 +11,10 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "SMF Works" }]
 dependencies = [
-  "playwright>=1.40",
+  # Pinned (hsf_5eeb129e1510a742c74afd73): a range spec lets each install
+  # resolve a different playwright driver, which downloads a different
+  # Firefox build with no integrity check. Pin to one known version.
+  "playwright==1.49.1",
   "pydantic>=2",
   "typer>=0.12"
 ]
